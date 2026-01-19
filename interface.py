@@ -3,9 +3,9 @@ from tkinter import filedialog
 from PIL import Image, ImageTk
 import numpy as np
 
-from cuda_image_lib import rgb_to_gray
-from cuda_image_lib import blur3x3
-from cuda_image_lib import laplace3x3
+from cuda_image_processor import rgbtogray
+from cuda_image_processor import gaussianblur
+from cuda_image_processor import laplacefilter
 
 
 class ImageApp:
@@ -33,7 +33,7 @@ class ImageApp:
         if not path:
             return
 
-        img = Image.open(path).convert("RGB")
+        img = Image.open(path).convert("RGBA")
         self.image = np.array(img)
 
         self.show_image(self.image)
@@ -42,7 +42,7 @@ class ImageApp:
         if array.ndim == 2:
             img = Image.fromarray(array.astype(np.uint8), mode="L")
         else:
-            img = Image.fromarray(array.astype(np.uint8), mode="RGB")
+            img = Image.fromarray(array.astype(np.uint8), mode="RGBA")
 
         img = img.resize((400, 400))
         self.photo = ImageTk.PhotoImage(img)
@@ -52,7 +52,7 @@ class ImageApp:
         if self.image is None:
             return
 
-        gray = rgb_to_gray(self.image)
+        gray = rgbtogray(self.image)
         self.image = gray
         self.show_image(gray)
 
@@ -60,7 +60,7 @@ class ImageApp:
         if self.image is None:
             return
 
-        blurred = blur3x3(self.image)
+        blurred = gaussianblur(self.image)
         self.image = blurred
         self.show_image(blurred)
 
@@ -68,7 +68,7 @@ class ImageApp:
         if self.image is None:
             return
 
-        edges = laplace3x3(self.image)
+        edges = laplacefilter(self.image)
         self.image = edges
         self.show_image(edges)
 
